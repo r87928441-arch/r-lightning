@@ -1,0 +1,451 @@
+// Define the pins for the RGB LED
+const int redPin = 9;
+const int greenPin = 10;
+const int bluePin = 11;
+
+void setup() {
+  // Set the RGB pins as outputs
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+}
+
+void loop() {
+  // 1. Basic Colors
+  setColor(255, 0, 0);   // Red
+  delay(1000);
+  setColor(0, 255, 0);   // Green
+  delay(1000);
+  setColor(0, 0, 255);   // Blue
+  delay(1000);
+  setColor(255, 255, 0); // Yellow (Red + Green)
+  delay(1000);
+  setColor(80, 0, 80);   // Purple
+  delay(1000);
+
+  // 2. Smooth Rainbow Fade
+  rainbowFade();
+}
+
+// Function to set the color of the LED
+void setColor(int redValue, int greenValue, int blueValue) {
+  // For Common Cathode: 255 is Bright, 0 is Off
+  analogWrite(redPin, redValue);
+  analogWrite(greenPin, greenValue);
+  analogWrite(bluePin, blueValue);
+}
+
+void rainbowFade() {
+  for (int i = 0; i < 255; i++) {
+    setColor(255 - i, i, 0); // Transition Red to Green
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(0, 255 - i, i); // Transition Green to Blue
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(i, 0, 255 - i); // Transition Blue to Red
+    delay(10);
+  }
+}// Define the pins for the RGB LED
+const int redPin = 9;
+const int greenPin = 10;
+const int bluePin = 11;
+
+void setup() {
+  // Set the RGB pins as outputs
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+}
+
+void loop() {
+  // 1. Basic Colors
+  setColor(255, 0, 0);   // Red
+  delay(1000);
+  setColor(0, 255, 0);   // Green
+  delay(1000);
+  setColor(0, 0, 255);   // Blue
+  delay(1000);
+  setColor(255, 255, 0); // Yellow (Red + Green)
+  delay(1000);
+  setColor(80, 0, 80);   // Purple
+  delay(1000);
+
+  // 2. Smooth Rainbow Fade
+  rainbowFade();
+}
+
+// Function to set the color of the LED
+void setColor(int redValue, int greenValue, int blueValue) {
+  // For Common Cathode: 255 is Bright, 0 is Off
+  analogWrite(redPin, redValue);
+  analogWrite(greenPin, greenValue);
+  analogWrite(bluePin, blueValue);
+}
+
+void rainbowFade() {
+  for (int i = 0; i < 255; i++) {
+    setColor(255 - i, i, 0); // Transition Red to Green
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(0, 255 - i, i); // Transition Green to Blue
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(i, 0, 255 - i); // Transition Blue to Red
+    delay(10);
+  }
+}// Define the pins for the RGB LED
+const int redPin = 9;
+const int greenPin = 10;
+const int bluePin = 11;
+
+void setup() {
+  // Set the RGB pins as outputs
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+}
+
+void loop() {
+  // 1. Basic Colors
+  setColor(255, 0, 0);   // Red
+  delay(1000);
+  setColor(0, 255, 0);   // Green
+  delay(1000);
+  setColor(0, 0, 255);   // Blue
+  delay(1000);
+  setColor(255, 255, 0); // Yellow (Red + Green)
+  delay(1000);
+  setColor(80, 0, 80);   // Purple
+  delay(1000);
+
+  // 2. Smooth Rainbow Fade
+  rainbowFade();
+}
+
+// Function to set the color of the LED
+void setColor(int redValue, int greenValue, int blueValue) {
+  // For Common Cathode: 255 is Bright, 0 is Off
+  analogWrite(redPin, redValue);
+  analogWrite(greenPin, greenValue);
+  analogWrite(bluePin, blueValue);
+}
+
+void rainbowFade() {
+  for (int i = 0; i < 255; i++) {
+    setColor(255 - i, i, 0); // Transition Red to Green
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(0, 255 - i, i); // Transition Green to Blue
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(i, 0, 255 - i); // Transition Blue to Red
+    delay(10);
+  }
+}// Define the pins for the RGB LED
+const int redPin = 9;
+const int greenPin = 10;
+const int bluePin = 11;
+
+void setup() {
+  // Set the RGB pins as outputs
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+}
+
+void loop() {
+  // 1. Basic Colors
+  setColor(255, 0, 0);   // Red
+  delay(1000);
+  setColor(0, 255, 0);   // Green
+  delay(1000);
+  setColor(0, 0, 255);   // Blue
+  delay(1000);
+  setColor(255, 255, 0); // Yellow (Red + Green)
+  delay(1000);
+  setColor(80, 0, 80);   // Purple
+  delay(1000);
+
+  // 2. Smooth Rainbow Fade
+  rainbowFade();
+}
+
+// Function to set the color of the LED
+void setColor(int redValue, int greenValue, int blueValue) {
+  // For Common Cathode: 255 is Bright, 0 is Off
+  analogWrite(redPin, redValue);
+  analogWrite(greenPin, greenValue);
+  analogWrite(bluePin, blueValue);
+}
+
+void rainbowFade() {
+  for (int i = 0; i < 255; i++) {
+    setColor(255 - i, i, 0); // Transition Red to Green
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(0, 255 - i, i); // Transition Green to Blue
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(i, 0, 255 - i); // Transition Blue to Red
+    delay(10);
+  }
+}// Define the pins for the RGB LED
+const int redPin = 9;
+const int greenPin = 10;
+const int bluePin = 11;
+
+void setup() {
+  // Set the RGB pins as outputs
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+}
+
+void loop() {
+  // 1. Basic Colors
+  setColor(255, 0, 0);   // Red
+  delay(1000);
+  setColor(0, 255, 0);   // Green
+  delay(1000);
+  setColor(0, 0, 255);   // Blue
+  delay(1000);
+  setColor(255, 255, 0); // Yellow (Red + Green)
+  delay(1000);
+  setColor(80, 0, 80);   // Purple
+  delay(1000);
+
+  // 2. Smooth Rainbow Fade
+  rainbowFade();
+}
+
+// Function to set the color of the LED
+void setColor(int redValue, int greenValue, int blueValue) {
+  // For Common Cathode: 255 is Bright, 0 is Off
+  analogWrite(redPin, redValue);
+  analogWrite(greenPin, greenValue);
+  analogWrite(bluePin, blueValue);
+}
+
+void rainbowFade() {
+  for (int i = 0; i < 255; i++) {
+    setColor(255 - i, i, 0); // Transition Red to Green
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(0, 255 - i, i); // Transition Green to Blue
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(i, 0, 255 - i); // Transition Blue to Red
+    delay(10);
+  }
+}// Define the pins for the RGB LED
+const int redPin = 9;
+const int greenPin = 10;
+const int bluePin = 11;
+
+void setup() {
+  // Set the RGB pins as outputs
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+}
+
+void loop() {
+  // 1. Basic Colors
+  setColor(255, 0, 0);   // Red
+  delay(1000);
+  setColor(0, 255, 0);   // Green
+  delay(1000);
+  setColor(0, 0, 255);   // Blue
+  delay(1000);
+  setColor(255, 255, 0); // Yellow (Red + Green)
+  delay(1000);
+  setColor(80, 0, 80);   // Purple
+  delay(1000);
+
+  // 2. Smooth Rainbow Fade
+  rainbowFade();
+}
+
+// Function to set the color of the LED
+void setColor(int redValue, int greenValue, int blueValue) {
+  // For Common Cathode: 255 is Bright, 0 is Off
+  analogWrite(redPin, redValue);
+  analogWrite(greenPin, greenValue);
+  analogWrite(bluePin, blueValue);
+}
+
+void rainbowFade() {
+  for (int i = 0; i < 255; i++) {
+    setColor(255 - i, i, 0); // Transition Red to Green
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(0, 255 - i, i); // Transition Green to Blue
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(i, 0, 255 - i); // Transition Blue to Red
+    delay(10);
+  }
+}// Define the pins for the RGB LED
+const int redPin = 9;
+const int greenPin = 10;
+const int bluePin = 11;
+
+void setup() {
+  // Set the RGB pins as outputs
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+}
+
+void loop() {
+  // 1. Basic Colors
+  setColor(255, 0, 0);   // Red
+  delay(1000);
+  setColor(0, 255, 0);   // Green
+  delay(1000);
+  setColor(0, 0, 255);   // Blue
+  delay(1000);
+  setColor(255, 255, 0); // Yellow (Red + Green)
+  delay(1000);
+  setColor(80, 0, 80);   // Purple
+  delay(1000);
+
+  // 2. Smooth Rainbow Fade
+  rainbowFade();
+}
+
+// Function to set the color of the LED
+void setColor(int redValue, int greenValue, int blueValue) {
+  // For Common Cathode: 255 is Bright, 0 is Off
+  analogWrite(redPin, redValue);
+  analogWrite(greenPin, greenValue);
+  analogWrite(bluePin, blueValue);
+}
+
+void rainbowFade() {
+  for (int i = 0; i < 255; i++) {
+    setColor(255 - i, i, 0); // Transition Red to Green
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(0, 255 - i, i); // Transition Green to Blue
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(i, 0, 255 - i); // Transition Blue to Red
+    delay(10);
+  }
+}// Define the pins for the RGB LED
+const int redPin = 9;
+const int greenPin = 10;
+const int bluePin = 11;
+
+void setup() {
+  // Set the RGB pins as outputs
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+}
+
+void loop() {
+  // 1. Basic Colors
+  setColor(255, 0, 0);   // Red
+  delay(1000);
+  setColor(0, 255, 0);   // Green
+  delay(1000);
+  setColor(0, 0, 255);   // Blue
+  delay(1000);
+  setColor(255, 255, 0); // Yellow (Red + Green)
+  delay(1000);
+  setColor(80, 0, 80);   // Purple
+  delay(1000);
+
+  // 2. Smooth Rainbow Fade
+  rainbowFade();
+}
+
+// Function to set the color of the LED
+void setColor(int redValue, int greenValue, int blueValue) {
+  // For Common Cathode: 255 is Bright, 0 is Off
+  analogWrite(redPin, redValue);
+  analogWrite(greenPin, greenValue);
+  analogWrite(bluePin, blueValue);
+}
+
+void rainbowFade() {
+  for (int i = 0; i < 255; i++) {
+    setColor(255 - i, i, 0); // Transition Red to Green
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(0, 255 - i, i); // Transition Green to Blue
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(i, 0, 255 - i); // Transition Blue to Red
+    delay(10);
+  }
+}// Define the pins for the RGB LED
+const int redPin = 9;
+const int greenPin = 10;
+const int bluePin = 11;
+
+void setup() {
+  // Set the RGB pins as outputs
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+}
+
+void loop() {
+  // 1. Basic Colors
+  setColor(255, 0, 0);   // Red
+  delay(1000);
+  setColor(0, 255, 0);   // Green
+  delay(1000);
+  setColor(0, 0, 255);   // Blue
+  delay(1000);
+  setColor(255, 255, 0); // Yellow (Red + Green)
+  delay(1000);
+  setColor(80, 0, 80);   // Purple
+  delay(1000);
+
+  // 2. Smooth Rainbow Fade
+  rainbowFade();
+}
+
+// Function to set the color of the LED
+void setColor(int redValue, int greenValue, int blueValue) {
+  // For Common Cathode: 255 is Bright, 0 is Off
+  analogWrite(redPin, redValue);
+  analogWrite(greenPin, greenValue);
+  analogWrite(bluePin, blueValue);
+}
+
+void rainbowFade() {
+  for (int i = 0; i < 255; i++) {
+    setColor(255 - i, i, 0); // Transition Red to Green
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(0, 255 - i, i); // Transition Green to Blue
+    delay(10);
+  }
+  for (int i = 0; i < 255; i++) {
+    setColor(i, 0, 255 - i); // Transition Blue to Red
+    delay(10);
+  }
+}
