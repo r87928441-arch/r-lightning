@@ -1,0 +1,278 @@
+// ============================================================
+//  DESK BUDDY — Arduino Uno R4 WiFi
+//  OLED: SSD1306 0.96" I2C (128x64)  |  Touch: KY-036 on D2
+//
+//  SCREEN LAYOUT:
+//    y  0–39 → RoboEyes  (top 40px, eyes only)
+//    y 40–63 → Mouth     (bottom 24px, drawn manually)
+//
+//  Serial commands (115200 baud):
+//    CMD:WAKE        CMD:SLEEP       CMD:LISTEN
+//    CMD:THINK       CMD:HAPPY       CMD:SAD
+//    CMD:SURPRISED   CMD:IDLE        CMD:SPEAK:<ms>
+// ============================================================
+
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#include <FluxGarage_RoboEyes.h>
+
+// ── Display ──────────────────────────────────────────────────
+#define SCREEN_WIDTH   128
+#define SCREEN_HEIGHT   64
+#define OLED_RESET      -1
+
+#define EYE_ZONE_H      40          // RoboEyes only draws in 0..39
+#define MOUTH_Y         42          // mouth zone starts here
+#define MOUTH_ZONE_H    20
+#define MOUTH_CX        (SCREEN_WIDTH / 2)   // 64
+#define MOUTH_CY        (MOUTH_Y + 9)        // 51
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+RoboEyes<Adafruit_SSD1306> roboEyes(display);
+
+// ── Touch ────────────────────────────────────────────────────
+#define TOUCH_PIN 2
+
+// ── State ────────────────────────────────────────────────────
+enum BuddyState { SLEEPING, IDLE, LISTENING, THINKING, SPEAKING };
+BuddyState state    = SLEEPING;
+bool isAwake        = false;
+bool lastTouch      = LOW;
+
+// ── Lip-sync ─────────────────────────────────────────────────
+bool          lipSyncing = false;
+unsigned long lipEnd     = 0;
+unsigned long lipTimer   = 0;
+bool          mouthOpen  = false;
+const int     LIP_MS     = 220;  // ms per mouth flip — increase to slow down, decrease to speed up
+
+// ── Serial ───────────────────────────────────────────────────
+String cmdBuf = "";
+
+// ─────────────────────────────────────────────────────────────
+//  MOUTH SHAPES  (all draw inside y=MOUTH_Y..63, never above)
+// ─────────────────────────────────────────────────────────────
+
+void eraseMouth() {
+  display.fillRect(0, MOUTH_Y - 2, SCREEN_WIDTH, MOUTH_ZONE_H + 2, BLACK);
+}
+
+// Happy smile
+void drawSmile() {
+  int cx = MOUTH_CX, cy = MOUTH_CY;
+  display.drawLine(cx-12, cy-2, cx-5,  cy+4,  WHITE);
+  display.drawLine(cx-5,  cy+4, cx+5,  cy+4,  WHITE);
+  display.drawLine(cx+5,  cy+4, cx+12, cy-2,  WHITE);
+}
+
+// Open mouth (speaking)
+void drawOpen() {
+  display.fillEllipse(MOUTH_CX, MOUTH_CY, 13, 8, WHITE);
+  display.fillEllipse(MOUTH_CX, MOUTH_CY,  8, 4, BLACK);
+}
+
+// Flat / neutral
+void drawFlat() {
+  display.drawLine(MOUTH_CX-10, MOUTH_CY, MOUTH_CX+10, MOUTH_CY, WHITE);
+}
+
+// Frown
+void drawFrown() {
+  int cx = MOUTH_CX, cy = MOUTH_CY;
+  display.drawLine(cx-12, cy+3,  cx-5,  cy-2, WHITE);
+  display.drawLine(cx-5,  cy-2,  cx+5,  cy-2, WHITE);
+  display.drawLine(cx+5,  cy-2,  cx+12, cy+3, WHITE);
+}
+
+// Surprised O
+void drawO() {
+  display.fillCircle(MOUTH_CX, MOUTH_CY, 7, WHITE);
+  display.fillCircle(MOUTH_CX, MOUTH_CY, 3, BLACK);
+}
+
+// Push only the mouth zone to hardware
+void pushMouth() {
+  display.display();
+}
+
+// ─────────────────────────────────────────────────────────────
+//  STATE MACHINE
+// ─────────────────────────────────────────────────────────────
+
+void applyState(BuddyState s) {
+  state      = s;
+  lipSyncing = false;
+  eraseMouth();
+
+  switch (s) {
+
+    case SLEEPING:
+      roboEyes.setMood(DEFAULT);
+      roboEyes.setAutoblinker(OFF);
+      roboEyes.setIdleMode(OFF);
+      roboEyes.close();
+      drawFlat();
+      break;
+
+    case IDLE:
+      roboEyes.setMood(DEFAULT);
+      roboEyes.setWidth(24, 24);
+      roboEyes.setHeight(18, 18);
+      roboEyes.open();
+      roboEyes.setAutoblinker(ON, 3, 1);
+      roboEyes.setIdleMode(ON, 3, 2);
+      drawSmile();
+      break;
+
+    case LISTENING:
+      roboEyes.setAutoblinker(OFF);
+      roboEyes.setIdleMode(OFF);
+      roboEyes.setMood(DEFAULT);
+      roboEyes.setWidth(28, 22);
+      roboEyes.setHeight(20, 16);
+      roboEyes.open();
+      roboEyes.setPosition(W);
+      drawFlat();
+      break;
+
+    case THINKING:
+      roboEyes.setAutoblinker(ON, 2, 1);
+      roboEyes.setIdleMode(OFF);
+      roboEyes.setMood(TIRED);
+      roboEyes.setPosition(N);
+      drawFlat();
+      break;
+
+    case SPEAKING:
+      roboEyes.setAutoblinker(ON, 4, 1);
+      roboEyes.setIdleMode(OFF);
+      roboEyes.setMood(HAPPY);
+      roboEyes.setPosition(DEFAULT);
+      // mouth handled by lip-sync
+      break;
+  }
+
+  pushMouth();
+}
+
+// ─────────────────────────────────────────────────────────────
+//  COMMANDS
+// ─────────────────────────────────────────────────────────────
+
+void handleCommand(String cmd) {
+  cmd.trim();
+
+  if      (cmd == "WAKE")      { isAwake = true;  applyState(IDLE); }
+  else if (cmd == "SLEEP")     { isAwake = false; applyState(SLEEPING); }
+  else if (cmd == "IDLE")      { if (isAwake) applyState(IDLE); }
+  else if (cmd == "LISTEN")    { if (isAwake) applyState(LISTENING); }
+  else if (cmd == "THINK")     { if (isAwake) applyState(THINKING); }
+
+  else if (cmd == "HAPPY") {
+    if (isAwake) {
+      roboEyes.setMood(HAPPY);
+      roboEyes.anim_laugh();
+      eraseMouth(); drawSmile(); pushMouth();
+    }
+  }
+  else if (cmd == "SAD") {
+    if (isAwake) {
+      roboEyes.setMood(TIRED);
+      eraseMouth(); drawFrown(); pushMouth();
+    }
+  }
+  else if (cmd == "SURPRISED") {
+    if (isAwake) {
+      roboEyes.setMood(DEFAULT);
+      roboEyes.setWidth(32, 32);
+      roboEyes.setHeight(26, 26);
+      roboEyes.open();
+      eraseMouth(); drawO(); pushMouth();
+    }
+  }
+  else if (cmd.startsWith("SPEAK:")) {
+    if (isAwake) {
+      int dur = cmd.substring(6).toInt();
+      if (dur <= 0) dur = 3000;
+      applyState(SPEAKING);
+      lipSyncing = true;
+      lipEnd     = millis() + dur;
+      lipTimer   = millis();
+      mouthOpen  = false;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+//  SETUP
+// ─────────────────────────────────────────────────────────────
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(TOUCH_PIN, INPUT);
+
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    Serial.println(F("SSD1306 failed"));
+    for (;;);
+  }
+
+  display.clearDisplay();
+  display.display();
+
+  // Key fix: pass EYE_ZONE_H (40) so RoboEyes never draws below y=40
+  roboEyes.begin(SCREEN_WIDTH, EYE_ZONE_H, 60);
+  roboEyes.setPosition(DEFAULT);
+  roboEyes.close();
+
+  // Initial sleeping face
+  drawFlat();
+  display.display();
+
+  Serial.println(F("BUDDY:READY"));
+}
+
+// ─────────────────────────────────────────────────────────────
+//  LOOP
+// ─────────────────────────────────────────────────────────────
+
+void loop() {
+
+  // Serial
+  while (Serial.available()) {
+    char c = (char)Serial.read();
+    if (c == '\n') {
+      if (cmdBuf.startsWith("CMD:")) handleCommand(cmdBuf.substring(4));
+      cmdBuf = "";
+    } else {
+      cmdBuf += c;
+    }
+  }
+
+  // Touch toggle
+  bool touch = digitalRead(TOUCH_PIN);
+  if (touch == HIGH && lastTouch == LOW) {
+    isAwake = !isAwake;
+    applyState(isAwake ? IDLE : SLEEPING);
+    Serial.println(isAwake ? F("TOUCH:WAKE") : F("TOUCH:SLEEP"));
+    delay(50);
+  }
+  lastTouch = touch;
+
+  // Lip-sync
+  if (lipSyncing) {
+    if (millis() >= lipEnd) {
+      lipSyncing = false;
+      applyState(IDLE);
+      Serial.println(F("SPEAK:DONE"));
+    } else if (millis() >= lipTimer + LIP_MS) {
+      lipTimer  = millis();
+      mouthOpen = !mouthOpen;
+      eraseMouth();
+      if (mouthOpen) drawOpen(); else drawSmile();
+      pushMouth();
+    }
+  }
+
+  roboEyes.update();
+}
